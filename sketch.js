@@ -8,6 +8,12 @@ https://www.tensorflow.org/hub/tutorials/movenet
 let video, bodypose, pose, keypoint, detector;
 let poses = [];
 
+function preload(){	
+	birdImg= loadImage("bird.gif")	
+}
+
+
+
 async function init() {
   const detectorConfig = {
     modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
@@ -50,8 +56,9 @@ function draw() {
   // flip horizontal
   cam = get();
   translate(cam.width, 0);
-  scale(-1, 1);
+  scale(-1, 1);  //反向
   image(cam, 0, 0);
+ 
 }
 
 function drawSkeleton() {
@@ -59,6 +66,19 @@ function drawSkeleton() {
   for (let i = 0; i < poses.length; i++) {
     pose = poses[i];
     // shoulder to wrist
+
+    partA = pose.keypoints[0];
+
+    if(partA.score>0.1){
+      //line(partA.x,partA.y,partB.x,partB.y)//線
+     push()
+      textSize(40)
+      scale(-1,1)
+      text("412731001,李怡玟",partA.x-width,partA.y-250)
+      //print(partA.x)
+      pop()
+    }
+
     for (j = 5; j < 9; j++) {
       if (pose.keypoints[j].score > 0.1 && pose.keypoints[j + 2].score > 0.1) {
         partA = pose.keypoints[j];
@@ -66,11 +86,28 @@ function drawSkeleton() {
         line(partA.x, partA.y, partB.x, partB.y);
       }
     }
+    // eye
+    partA = pose.keypoints[1];
+    partB = pose.keypoints[2];
+    if (partA.score > 0.1 && partB.score > 0.1) {
+      //line(partA.x, partA.y, partB.x, partB.y);
+      push()
+      image(birdImg,partA.x,partA.y,50,50)
+      image(birdImg,partB.x,partB.y,50,50)
+     // print(partA.x)
+    pop()
+
+    }
     // shoulder to shoulder
     partA = pose.keypoints[5];
     partB = pose.keypoints[6];
     if (partA.score > 0.1 && partB.score > 0.1) {
-      line(partA.x, partA.y, partB.x, partB.y);
+      //line(partA.x, partA.y, partB.x, partB.y);
+      push()
+        image(birdImg,partA.x-75,partA.y-75,150,150)
+        image(birdImg,partB.x-75,partB.y-75,150,150)
+       // print(partA.x)
+      pop()
       
     }
     // hip to hip
@@ -85,6 +122,7 @@ function drawSkeleton() {
     partB = pose.keypoints[11];
     if (partA.score > 0.1 && partB.score > 0.1) {
       line(partA.x, partA.y, partB.x, partB.y);
+     
       
     }
     partA = pose.keypoints[6];
